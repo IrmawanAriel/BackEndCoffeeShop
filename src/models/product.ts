@@ -10,7 +10,7 @@ export interface product {
 }
 
 export interface productBody {
-    id: number;
+    id?: number;
     description: string;
     price: number;
     product_name?: string;
@@ -20,7 +20,7 @@ export interface productBody {
 
 }
 
-export interface productdeletQuerry {
+export interface productImg {
     id?: number;
 }
 
@@ -28,11 +28,11 @@ export interface productQuerry {
     product_name?: string;
     category?: string;
     promo?: string;
-    harga_min?: number;
-    harga_max?: number;
+    harga_min?: string;
+    harga_max?: string;
     sort?: string;
     stock?: string;
-    page?: number;
-    limit?: number;
+    page: string;
+    limit?: string;
 
 }

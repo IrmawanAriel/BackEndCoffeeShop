@@ -1,11 +1,13 @@
 // export const getPostgres;
 import { Request, Response } from 'express';
 
-import { createProduct, getAllProduct, GetOneProduct, UpdateProduct, deleteProduct } from '../repositories/product';
-import { productBody, productdeletQuerry, productQuerry } from '../models/product';
+import { createProduct, getAllProduct, GetOneProduct, UpdateProduct, deleteProduct, getTotalProduct, getProdImg } from '../repositories/product';
+import { productBody, productQuerry } from '../models/product';
+import { IProductRes } from '../models/response';
+import getLink from '../helpers/getLink';
 
 
-export const getProduct = async (req: Request<{},{},{},productQuerry>, res: Response)=>{
+export const getProduct = async (req: Request<{},{},{},productQuerry>, res: Response<IProductRes>)=>{
     try {
         const result = await getAllProduct(req.query);
         if(result.rows.length === 0 ) {
@@ -13,9 +15,28 @@ export const getProduct = async (req: Request<{},{},{},productQuerry>, res: Resp
             msg: 'data tak ditemukan',
             data: [],
         })}
+
+        //mendaptkan total product
+        const TotdataProduct = await getTotalProduct(req.query);
+
+        //mendapatkan value page untuk di oper ke response
+        const page = parseInt(req.query.page) || 1;
+
+        //mendapatkan jumlah total product 
+        const totalData = parseInt(TotdataProduct.rows[0].total_product);
+
+        //mendapatkan data total page
+        const totalPage = Math.ceil( totalData/ (parseInt(req.query.limit || '3') )) ; // assign default limit 3 karna error "limit possible to undefined"
         return res.status(200).json({
             msg: "sucses",
-            data: result.rows
+            data: result.rows,
+            meta: {
+                totalData,
+                totalPage,
+                page,
+                prevLink: page > 1 ? getLink(req, "previous") : null,
+                nextLink: page != totalPage ? getLink(req, "next") : null,   
+            }
         });
     } catch (err: unknown){
         if (err instanceof Error){
@@ -75,7 +96,7 @@ export const UpdateOneProduct = async (req: Request<{id: number},{}, productBody
     try {
         const id = req.params.id;
         const result = await UpdateProduct(id, req.body);
-        return res.status(201).json({
+        return res.status(200).json({
             msg: 'upadate succed',
             data: result
         }) 
@@ -109,3 +130,28 @@ export const deleteProductrow = async (req: Request<{id : number}>, res: Respons
     }
 }
 
+export const UploadProductImg = async (req: Request<{id: string}>, res: Response ) =>{
+    try {
+        const { file } = req;
+        const id = parseInt(req.params.id);
+        const result = await getProdImg( id, file?.filename);
+        return res.status(200).json({
+            msg: "Gambar berhasil ditambahkan",
+            data: result.rows,
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        if (/(invalid(.)+uuid(.)+)/g.test(error.message)) {
+          return res.status(401).json({
+            msg: "Error",
+            err: "User tidak ditemukan",
+          });
+        }
+        console.log(error.message);
+      }
+      return res.status(500).json({
+        msg: "Error",
+        err: "Internal Server Error",
+      });
+    }
+}

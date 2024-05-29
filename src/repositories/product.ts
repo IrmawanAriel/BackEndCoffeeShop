@@ -1,15 +1,17 @@
 import { Query, QueryResult } from "pg";
 
 import db from "../configs/pg";
-import { product, productBody, productQuerry } from '../models/product';
+import { product, productBody, productImg, productQuerry } from '../models/product';
+import { query } from 'express';
 
-export const getAllProduct = ({category,harga_max,harga_min,limit,page = 1,product_name,promo,sort,stock}: productQuerry): Promise<QueryResult<product>> => {
+export const getAllProduct = ({category,harga_max,harga_min,limit,page ,product_name,promo,sort,stock}: productQuerry): Promise<QueryResult<product>> => {
     let query = `select * from product where true`; // 1.
     const values = [];
     if (product_name) {
         query += " and product_name ilike $" + (values.length + 1);
         values.push(`%${product_name}%`)
     }
+    // console.log(values.length)
     if (category) {
         query += " and category ilike $" + (values.length + 1);
         values.push(`%${category}%`)
@@ -44,8 +46,10 @@ export const getAllProduct = ({category,harga_max,harga_min,limit,page = 1,produ
     }
     if (page && limit) { //default val
         query += " offset $" + (values.length + 1);
-        values.push((page - 1) * limit);
+        values.push((parseInt(page) - 1) * parseInt(limit));
     }
+
+    console.log(query , values);
     return db.query(query, values);
 }
 
@@ -77,5 +81,22 @@ export const UpdateProduct = (id: number, body: productBody): Promise<QueryResul
 export const deleteProduct = (id: number): Promise<QueryResult<product>> => {
     const query = "delete from product where id = $1 returning id";
     const values = [id];
+    return db.query(query, values);
+}
+
+export const getTotalProduct = ({ product_name }: productQuerry): Promise<QueryResult<{ total_product: string }>> => {
+    let query = "select count(*) as total_product from product";
+    let values = [];
+    if(product_name){
+        query += ' where product_name ilike $1';
+         values.push(`%${product_name}%`);
+    }
+    console.log(query,values)
+    return db.query(query,values);
+}
+
+export const getProdImg = (id: number, image?: string): Promise<QueryResult<productImg>> => {
+    const query = "update product set image = $1 where id = $2 ";
+    const values = [image || null, id];
     return db.query(query, values);
 }

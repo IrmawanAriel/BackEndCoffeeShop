@@ -1,6 +1,6 @@
 import { Router } from "express";
-// import { Request, Response } from "express";
-import { getProduct, getDetailProduct, createNewProduct, UpdateOneProduct, deleteProductrow } from "../controllers/product"; 
+import { getProduct, getDetailProduct, createNewProduct, UpdateOneProduct, deleteProductrow, UploadProductImg } from "../controllers/product"; 
+import { singleUpdloader } from "../middlewares/upload";
 
 // import { product } from '../models/product';
 
@@ -15,5 +15,7 @@ productrouter.post("/", createNewProduct);
 productrouter.put("/:id", UpdateOneProduct);
 
 productrouter.delete("/:id", deleteProductrow);
+
+productrouter.patch("/:id/ProductImage", singleUpdloader("ProductImage") , UploadProductImg )
 
 export default productrouter;

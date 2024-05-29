@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Check CORS</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <h1>CORS</h1>
+    <button id="btn">Test CORS</button>
+    <p id="response"></p>
+  </body>
+  <script>
+    const patchReq = (id) => {
+      axios
+        .put(`http://localhost:8000/product/${id}`, { 
+          price: 7900,
+          description: "Produk baru kami",
+          rating: 4.5,
+          promo_id: 3,
+          updated_at: "2024-05-15T07:41:31.195Z",
+          product_name: "hai product",
+          category: "kopi luwak", 
+        })
+        .then((res) => (response.innerHTML = `<span>${res.data.msg}</span>`))
+        .catch((err) => console.log(err));
+    };
+    const getReq = () => {
+      axios
+        .get(`http://localhost:8000/product`)
+        .then((res) => (response.innerHTML = `<span>${res.data.msg}</span>`))
+        .catch((err) => console.log(err));
+    };
+    const btn = document.querySelector("#btn");
+    const response = document.querySelector("#response");
+    btn.addEventListener("click", () => {
+      patchReq(8);
+    });
+    // fetch("http://localhost:8080/api/v1/books")
+    //   .then((response) => response.json())
+    //   .then((data) => console.log(data))
+    //   .catch((err) => console.log(err));
+  </script>
+</html>

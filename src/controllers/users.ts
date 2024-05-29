@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import { createUser, getAllUsers, updateOneUsers, deleteUser, registerUser, loginUser } from "../repositories/users"
+import { Request, response, Response } from 'express';
+import { createUser, getAllUsers, updateOneUsers, deleteUser, registerUser, loginUser, setImgUsers } from "../repositories/users"
 import {  usersQuery, usersReq, usersReg, usersLogin } from "../models/users";
 import bcrypt from "bcrypt";
 import  Jwt  from 'jsonwebtoken';
@@ -170,4 +170,29 @@ export const login = async (req: Request<{}, {}, usersLogin>, res: Response<{msg
             err: "Internal Server Error",
         });
     }
+}
+
+export const GetUserImg = async (req: Request<{email: string}>, res: Response) => {
+    try {
+        const { file } = req;
+        const result = await setImgUsers( req.params.email, file?.filename );
+        return res.status(200).json({
+            msg: "Gambar berhasil ditambahkan",
+            data: result.rows,
+          });
+        } catch (error) {
+          if (error instanceof Error) {
+            if (/(invalid(.)+uuid(.)+)/g.test(error.message)) {
+              return res.status(401).json({
+                msg: "Error",
+                err: "User tidak ditemukan",
+              });
+            }
+            console.log(error.message);
+          }
+          return res.status(500).json({
+            msg: "Error",
+            err: "Internal Server Error",
+          });
+        }
 }

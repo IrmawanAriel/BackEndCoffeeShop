@@ -12,8 +12,13 @@ export interface usersQuery {
     limit?: number;
 }
 
-export interface usersDelete{
-    id?: number;
+export interface usersGetId{
+    email?: number;
+    image?: string;
+}
+
+export interface UsersParam{
+    email: string;
 }
 
 export interface usersGet {

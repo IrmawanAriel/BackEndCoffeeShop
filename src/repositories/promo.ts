@@ -1,7 +1,6 @@
 import db from "../configs/pg";
 import {Query, QueryResult} from "pg";
 import { promoBody, promoQuery } from "../models/promo";
-import { query } from "express";
 
 export const getAllPromoData = (voucher?: string): Promise<QueryResult<promoBody>> => {
     let query = "select * from promo";

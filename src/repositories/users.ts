@@ -1,6 +1,6 @@
 import {Query, QueryResult} from "pg";
 import db from "../configs/pg";
-import { usersReq, usersGet, usersReg } from "../models/users";
+import { usersReq, usersGet, usersReg, usersGetId, UsersParam } from "../models/users";
 import { query } from 'express';
 
 export const getAllUsers = (fullname?: string, limit?: number | undefined, page?: number | undefined): Promise<QueryResult<usersGet>> => {
@@ -50,4 +50,10 @@ export const loginUser = (email: string): Promise<QueryResult<{ fullname: string
     const Query = "select fullname, password from users where email = $1";
     const values = [email];
     return db.query(Query, values);
+}
+
+export const setImgUsers = (email: string, image?: string): Promise<QueryResult<usersGetId>>  => {
+    const query = 'update users set image = $1 where email = $2 returning email, image'
+    const values = [image || null, email];
+    return db.query(query, values);
 }
