@@ -20,7 +20,7 @@ export const GetPesanan = (id?: number, page?: number, limit?: number): Promise<
         values.push((page - 1) * limit);
     }
 
-    console.log(page)
+    console.log(id, limit, page)
 
     return db.query(query, values);
 }
@@ -41,4 +41,15 @@ export const deletDataPesanan = (id: deletePesanan): Promise<QueryResult<pesanan
     const query ="delete from orders where id=$1 returning id";
     const values = [id];
     return db.query(query, values)
+}
+
+export const getTotalPesanan = (id?: number): Promise<QueryResult<{ total_order: string }>> => {
+    let query = "select count(*) as total_order from orders";
+    let values = [];
+    if(id){
+        query += ' where id = $1';
+         values.push(`${id}`);
+    }
+    // console.log(query,values)
+    return db.query(query,values);
 }

@@ -1,5 +1,5 @@
 export interface pesananModel {
-        id?: number;
+        id: number;
         product_id: number;
         user_id: number;
         status: number;
@@ -8,8 +8,8 @@ export interface pesananModel {
         takeaway: boolean;
         total: number;
         orderdate: Date;
-        page?: number;
-        limit?: number;
+        page: string;
+        limit: string;
 }
 
 export interface deletePesanan {

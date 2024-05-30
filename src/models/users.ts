@@ -7,8 +7,9 @@ export interface usersReq {
 }
 
 export interface usersQuery {
+    id?: number;
     fullname?: string;    
-    page?: number;
+    page?: string;
     limit?: number;
 }
 

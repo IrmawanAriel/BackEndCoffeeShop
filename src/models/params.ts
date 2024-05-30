@@ -1,8 +1,8 @@
 import { payloadInterface } from "./payload";
 import { productQuerry } from "./product";
-import { UsersParam } from "./users";
+import { UsersParam, usersQuery } from "./users";
 import { ParamsDictionary } from 'express-serve-static-core';
 
 
 export type AppParams = UsersParam | ParamsDictionary | payloadInterface;
-export type queryParams = productQuerry;
+export type queryParams = productQuerry | usersQuery ;

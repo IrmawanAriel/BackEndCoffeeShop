@@ -1,33 +1,52 @@
 import { Request, response, Response } from 'express';
-import { createUser, getAllUsers, updateOneUsers, deleteUser, registerUser, loginUser, setImgUsers } from "../repositories/users"
+import { createUser, getAllUsers, updateOneUsers, deleteUser, registerUser, loginUser, setImgUsers, getTotalUser } from "../repositories/users"
 import {  usersQuery, usersReq, usersReg, usersLogin } from "../models/users";
 import bcrypt from "bcrypt";
 import  Jwt  from 'jsonwebtoken';
 import { payloadInterface } from '../models/payload';
 import { jwtOptions } from '../middlewares/authorization';
+import getLink from '../helpers/getLink';
 
 export const getUsers = async (req: Request<{},{},{},usersQuery>, res: Response)=>{
     try {
-        const { fullname, page , limit } =  req.query;
-        const result =await getAllUsers( fullname, limit , page );
+        const { fullname, page , limit, id } =  req.query;
+        const result =await getAllUsers( fullname, limit , (page as string) );
         if(result.rows.length === 0 ) {
             return res.status(404).json({
             msg: 'data tak ditemukan',
             data: [],
         })}
-        return res.status(200).json({
-            msg: "sucses",
-            data: result.rows
-        });
-    } catch (err: unknown){
-        if (err instanceof Error){
-            console.log(err.message);
-        }
-        return res.status(500).json({
-            msg: "error",
-            err: "internal server error"
-        })
-    }
+        //mendaptkan total pesanan
+         const TotdataUser = await getTotalUser( id);
+
+         //mendapatkan value page untuk di oper ke response
+         const pageUser = parseInt(page || '1');
+ 
+         //mendapatkan jumlah total pesanan 
+         const totalData = TotdataUser.rows[0].total_user;
+
+         //mendapatkan data total page
+         const totalPage = Math.ceil( totalData / (limit || 3) ); // assign default limit 3 karna error "limit possible to undefined"
+         return res.status(200).json({
+             msg: "sucses",
+             data: result.rows,
+             meta: {
+                 totalData,
+                 totalPage,
+                 pageUser,
+                 prevLink: pageUser > 1 ? getLink(req, "previous") : null,
+                 nextLink: pageUser != totalPage ? getLink(req, "next") : null,   
+             }
+         });
+     } catch (err: unknown){
+         if (err instanceof Error){
+             console.log(err.message);
+         }
+         return res.status(500).json({
+             msg: "error",
+             err: "internal server error"
+         })
+     }
 }
 
 export const updateUsers = async(req: Request<{id: number},{},usersReq>, res: Response) =>{

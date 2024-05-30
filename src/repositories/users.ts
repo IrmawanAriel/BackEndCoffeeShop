@@ -3,7 +3,7 @@ import db from "../configs/pg";
 import { usersReq, usersGet, usersReg, usersGetId, UsersParam } from "../models/users";
 import { query } from 'express';
 
-export const getAllUsers = (fullname?: string, limit?: number | undefined, page?: number | undefined): Promise<QueryResult<usersGet>> => {
+export const getAllUsers = (fullname?: string, limit?: number | undefined, page?: string | undefined): Promise<QueryResult<usersGet>> => {
     let query = "select * from users";
     const values= [];
     if (fullname) {
@@ -16,7 +16,7 @@ export const getAllUsers = (fullname?: string, limit?: number | undefined, page?
     }
     if (page && limit) {
         query += " offset $" + (values.length + 1);
-        values.push((page - 1) * limit);
+        values.push((parseInt(page) - 1) * limit);
     }
 
     return db.query(query, values);
@@ -56,4 +56,15 @@ export const setImgUsers = (email: string, image?: string): Promise<QueryResult<
     const query = 'update users set image = $1 where email = $2 returning email, image'
     const values = [image || null, email];
     return db.query(query, values);
+}
+
+export const getTotalUser = (id?: number): Promise<QueryResult<{ total_user: number }>> => {
+    let query = "select count(*) as total_user from users";
+    let values = [];
+    if(id){
+        query += ' where id = $1';
+         values.push(`${id}`);
+    }
+    // console.log(query,values)
+    return db.query(query,values);
 }
