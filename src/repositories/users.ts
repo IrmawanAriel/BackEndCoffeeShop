@@ -4,7 +4,7 @@ import { usersReq, usersGet, usersReg, usersGetId, UsersParam } from "../models/
 import { query } from 'express';
 
 export const getAllUsers = (fullname?: string, limit?: number | undefined, page?: string | undefined): Promise<QueryResult<usersGet>> => {
-    let query = "select * from users";
+    let query = "select fullname, email, address from users";
     const values= [];
     if (fullname) {
         query += " where fullname ilike $1";

@@ -5,8 +5,17 @@ import { product, productBody, productImg, productQuerry } from '../models/produ
 import { query } from 'express';
 
 export const getAllProduct = ({category,harga_max,harga_min,limit,page ,product_name,promo,sort,stock}: productQuerry): Promise<QueryResult<product>> => {
-    let query = `select * from product where true`; // 1.
+    let query = `select * from product`; // 1.
     const values = [];
+    
+    if (promo === "tidak") {
+        query += " LEFT JOIN promo_product ON product.id = promo_product.product_id WHERE promo_product.promo_id IS NULL"; // 2. left join
+    } else {
+        query += " INNER JOIN promo_product ON product.id = promo_product.product_id WHERE promo_product.promo_id IS NOT NULL"; // inner
+    }
+
+    query += " AND true";
+
     if (product_name) {
         query += " and product_name ilike $" + (values.length + 1);
         values.push(`%${product_name}%`)
@@ -19,12 +28,6 @@ export const getAllProduct = ({category,harga_max,harga_min,limit,page ,product_
     if (stock === "tersedia") {
         query += " and stock !=0";
     }
-
-    // if (promo === "tidak") {
-    //     query += " and (promo_id is null or promo_id = 0)"; // 2. left join
-    // } else {
-    //     query += " and promo_id is not null and promo_id != 0"; // inner
-    // }
 
     if (harga_min) {
         query += " and price >= $" + (values.length + 1);
@@ -49,16 +52,17 @@ export const getAllProduct = ({category,harga_max,harga_min,limit,page ,product_
         values.push((parseInt(page) - 1) * parseInt(limit));
     }
 
-    console.log(query , values);
+    // console.log(query);
     return db.query(query, values);
 }
 
 export const GetOneProduct = (product_name: string) => {
-    const query = "select * from product where product_name =%1";
-    const values = [product_name];
+    const query = "SELECT * FROM product WHERE product_name = $1";
+    const values = [product_name]; 
+    console.log(product_name);
     return db.query(query, values);
-
 }
+
 
 export const createProduct = (body: productBody): Promise<QueryResult<product>> => {
     const query = `insert into product (price, description, rating, product_name, stock, category)
@@ -91,7 +95,7 @@ export const getTotalProduct = ({ product_name }: productQuerry): Promise<QueryR
         query += ' where product_name ilike $1';
          values.push(`%${product_name}%`);
     }
-    console.log(query,values)
+    // console.log(query,values)
     return db.query(query,values);
 }
 

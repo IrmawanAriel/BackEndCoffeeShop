@@ -22,6 +22,7 @@ export interface productBody {
 
 export interface productImg {
     id?: number;
+    image? : string;
 }
 
 export interface productQuerry {

@@ -6,6 +6,7 @@ import  Jwt  from 'jsonwebtoken';
 import { payloadInterface } from '../models/payload';
 import { jwtOptions } from '../middlewares/authorization';
 import getLink from '../helpers/getLink';
+import { IUsersRes } from '../models/response';
 
 export const getUsers = async (req: Request<{},{},{},usersQuery>, res: Response)=>{
     try {
@@ -49,7 +50,7 @@ export const getUsers = async (req: Request<{},{},{},usersQuery>, res: Response)
      }
 }
 
-export const updateUsers = async(req: Request<{id: number},{},usersReq>, res: Response) =>{
+export const updateUsers = async(req: Request<{id: number},{},usersReq>, res: Response<IUsersRes>) =>{
     try {
         const id = req.params.id;
         const body = req.body;
@@ -75,7 +76,7 @@ export const updateUsers = async(req: Request<{id: number},{},usersReq>, res: Re
     
 }
 
-export const createNewUser = async (req: Request<{},{},usersReq>, res: Response) => {
+export const createNewUser = async (req: Request<{},{},usersReq>, res: Response<IUsersRes>) => {
     try{
         const body = req.body;
         const result = await createUser(body);
@@ -100,7 +101,7 @@ export const createNewUser = async (req: Request<{},{},usersReq>, res: Response)
     
 }
 
-export const deleteOneUser = async (req: Request<{id: number}>, res: Response) => {
+export const deleteOneUser = async (req: Request<{id: number}>, res: Response<IUsersRes>) => {
     const id = req.params.id;
     try{
         const result = await deleteUser(id);

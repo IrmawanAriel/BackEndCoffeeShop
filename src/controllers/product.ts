@@ -10,6 +10,7 @@ import getLink from '../helpers/getLink';
 export const getProduct = async (req: Request<{},{},{},productQuerry>, res: Response<IProductRes>)=>{
     try {
         const result = await getAllProduct(req.query);
+        console.log(result.rows[0])
         if(result.rows.length === 0 ) {
             return res.status(404).json({
             msg: 'data tak ditemukan',
@@ -49,10 +50,9 @@ export const getProduct = async (req: Request<{},{},{},productQuerry>, res: Resp
     }
 }
 
-export const getDetailProduct = async (req: Request<{product_name: string}> , res: Response) => {
-    const product_name = req.params.product_name;
+export const getDetailProduct = async (req: Request<{nama_produk: string}> , res: Response<IProductRes>) => {
     try {
-        const result = await GetOneProduct(product_name);
+        const result = await GetOneProduct(req.params.nama_produk);
         if(result.rows.length === 0 ) {
             return res.status(404).json({
             msg: 'data tak ditemukan',
@@ -73,13 +73,13 @@ export const getDetailProduct = async (req: Request<{product_name: string}> , re
     }
 }
 
-export const createNewProduct = async (req: Request<{},{}, productBody>, res: Response) => {
+export const createNewProduct = async (req: Request<{},{}, productBody>, res: Response<IProductRes>) => {
     
     try{
         const result = await createProduct(req.body);
         return res.status(201).json({
             msg: 'succes created',
-            data: result
+            data: result.rows
         }) 
     } catch (err: unknown){
         if (err instanceof Error){
@@ -92,13 +92,13 @@ export const createNewProduct = async (req: Request<{},{}, productBody>, res: Re
     }
 };
 
-export const UpdateOneProduct = async (req: Request<{id: number},{}, productBody>, res: Response) => {
+export const UpdateOneProduct = async (req: Request<{id: number},{}, productBody>, res: Response<IProductRes>) => {
     try {
         const id = req.params.id;
         const result = await UpdateProduct(id, req.body);
         return res.status(200).json({
             msg: 'upadate succed',
-            data: result
+            data: result.rows
         }) 
     } catch (err: unknown){
         if (err instanceof Error){
@@ -111,13 +111,13 @@ export const UpdateOneProduct = async (req: Request<{id: number},{}, productBody
     }
 }
 
-export const deleteProductrow = async (req: Request<{id : number}>, res: Response)=> {
+export const deleteProductrow = async (req: Request<{id : number}>, res: Response<IProductRes>)=> {
     try{
         const id = req.params.id;
         const result = await deleteProduct(id);
         return res.status(200).json({
             msg : "delete succes",
-            data: id
+            data: result.rows
         })
     } catch (err: unknown){
         if (err instanceof Error){
@@ -130,7 +130,7 @@ export const deleteProductrow = async (req: Request<{id : number}>, res: Respons
     }
 }
 
-export const UploadProductImg = async (req: Request<{id: string}>, res: Response ) =>{
+export const UploadProductImg = async (req: Request<{id: string}>, res: Response<IProductRes> ) =>{
     try {
         const { file } = req;
         const id = parseInt(req.params.id);
