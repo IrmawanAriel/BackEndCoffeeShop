@@ -3,6 +3,7 @@ import { Query, QueryResult } from "pg";
 import db from "../configs/pg";
 import { product, productBody, productImg, productQuerry } from '../models/product';
 import { query } from 'express';
+import { UpdateOneProduct } from '../controllers/product';
 
 export const getAllProduct = ({category,harga_max,harga_min,limit,page ,product_name,promo,sort,stock}: productQuerry): Promise<QueryResult<product>> => {
     let query = `select * from product`; // 1.
@@ -73,12 +74,43 @@ export const createProduct = (body: productBody, image?: string): Promise<QueryR
     return db.query(query, values);
 }
 
-
-export const UpdateProduct = (id: number, body: productBody): Promise<QueryResult<product>> => {
-    const query = `UPDATE product SET price = $1, description = $2, rating = $3, product_name = $4 WHERE id=$5 RETURNING *`;
+export const UpdateProduct =  (id: number, body: productBody ,image?: string): Promise<QueryResult<product>> => {
+    let query = "update product set " ; 
     const { price, description, rating, product_name } = body;
-    const values = [price, description, rating, product_name, id];
-    return db.query(query, values);
+    const values = [];
+
+    if (price !== undefined &&price !== null) {
+        query += `price = $${values.length + 1}, `;
+        values.push(price);
+    }
+
+    if (description !== undefined && description !== null) {
+        query += `description = $${values.length + 1}, `;
+        values.push(description);
+    }
+
+    if (rating !== undefined && rating !== null) {
+        query += `rating = $${values.length + 1}, `;
+        values.push(rating);
+    }
+
+    if (product_name !== undefined && product_name !== null) {
+        query += `product_name = $${values.length + 1}, `;
+        values.push(product_name);
+    }
+
+        if (image) {
+            query += `image = $${(values.length + 1)}, `;
+            values.push(image);
+        }
+
+        query = query.slice(0, -2); //hapus koma dan spasi
+        query += ` WHERE id=$${(values.length + 1)} RETURNING *`;
+        values.push(id);
+        console.log(query)
+    
+        return db.query(query, values);
+
 }
 
 

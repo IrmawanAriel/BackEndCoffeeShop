@@ -13,7 +13,7 @@ usersRouter.put("/:id", updateUsers);
 
 usersRouter.delete("/:id", deleteOneUser);
 
-usersRouter.post("/register", register);
+usersRouter.post("/register", singleUpdloader("image"), register);
 
 usersRouter.post("/login", login);
 

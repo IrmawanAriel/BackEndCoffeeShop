@@ -33,6 +33,7 @@ export interface usersReg {
     email: string;
     password: string;
     fullname: string;
+    image?: string;
 }
 
 

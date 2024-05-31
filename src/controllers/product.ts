@@ -102,8 +102,14 @@ export const createNewProduct = async (req: Request<{},{}, productBody>, res: Re
 
 export const UpdateOneProduct = async (req: Request<{id: number},{}, productBody>, res: Response<IProductRes>) => {
     try {
+        const { file } = req;
         const id = req.params.id;
-        const result = await UpdateProduct(id, req.body);
+        const result = await UpdateProduct(id , req.body, file?.filename);
+        if(result.rows.length === 0 ) {
+            return res.status(404).json({
+            msg: 'data tak ditemukan',
+            data: [],
+        })}
         return res.status(200).json({
             msg: 'upadate succed',
             data: result.rows

@@ -19,6 +19,7 @@ export interface productBody {
     stock: number;
     category: string;
     json: string[];
+    // image?: string
 
 }
 

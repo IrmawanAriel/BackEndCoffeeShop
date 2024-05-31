@@ -40,9 +40,11 @@ export const deleteUser = (id: number) : Promise<QueryResult<usersReq>> => {
     return db.query(Query, values);
 }
 
-export const registerUser = (body: usersReg , hashed: string): Promise<QueryResult<usersReg>> => {
-    const Query = "insert into users (fullname, email, password) values ($1, $2, $3) returning *";
+export const registerUser = (body: usersReg , hashed: string, image?: string): Promise<QueryResult<usersReg>> => {
+
+    let Query = "insert into users (fullname, email, password" + (image ? ", image" : "") + ") values ($1, $2, $3" + (image ? ", $4" : "") + ")";
     const values = [body.fullname, body.email, hashed];
+    if(image) values.push(image);
     return db.query(Query, values);
 }
 

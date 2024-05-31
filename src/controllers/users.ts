@@ -122,16 +122,25 @@ export const deleteOneUser = async (req: Request<{id: number}>, res: Response<IU
 
 export const register = async (req: Request<{},{},usersReg>, res : Response) => {
     const { password } = req.body;
+    const { file } = req
     try{ 
         //make hash pass
         const salt = await bcrypt.genSalt();
         const hashed = await bcrypt.hash(password, salt);
 
         //simpan keadalam db
-        const result = await registerUser(req.body, hashed);
+        const result = await registerUser(req.body, hashed, file?.filename );
+        console.log(result);
+
+        if(result.rows.length === 0 ) {
+            return res.status(404).json({
+            msg: 'gagal register, isi data dengan benar',
+            data: [],
+        })}
+
         return res.status(200).json({
             msg: "register sucses",
-            // data: result.rows
+            data: result
         });
         
     } catch (err: unknown){

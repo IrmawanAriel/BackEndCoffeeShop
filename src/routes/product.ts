@@ -16,7 +16,6 @@ productrouter.patch("/:id", singleUpdloader("image") , UpdateOneProduct);
 
 productrouter.delete("/:id", deleteProductrow);
 
-// productrouter.patch("/:id/ProductImage", singleUpdloader("ProductImage") , UploadProductImg )
 
 
 export default productrouter;
