@@ -9,7 +9,7 @@ usersRouter.get("/",authorization() ,getUsers );
 
 usersRouter.post("/", createNewUser);
 
-usersRouter.put("/:id", updateUsers);
+usersRouter.put("/:id", singleUpdloader("image"), updateUsers);
 
 usersRouter.delete("/:id", deleteOneUser);
 

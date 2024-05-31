@@ -22,10 +22,35 @@ export const getAllUsers = (fullname?: string, limit?: number | undefined, page?
     return db.query(query, values);
 }
 
-export const updateOneUsers = (body: usersReq, id: number): Promise<QueryResult<usersReq>> => {
-    const Query = "update users set fullname = $1, email = $2, password = $3 where id = $4 returning *";
-    const values = [body.fullname, body.email, body.password, id];
-    return db.query(Query, values);
+export const updateOneUsers = (body: usersReq, id: number, hashed?: string, image?: string): Promise<QueryResult<usersReq>> => {
+    const { fullname, email } = body
+    let query = "update users set ";
+    const values = [];
+
+    if (fullname) {
+        query += `fullname = $${values.length + 1}, `;
+        values.push(fullname);
+    }
+
+    if (email) {
+        query += `email = $${values.length + 1}, `;
+        values.push(email);
+    }
+
+    if (hashed) {
+        query += `password = $${values.length + 1}, `;
+        values.push(hashed);
+    }
+
+    if (image) {
+        query += `image = $${values.length + 1} `
+        values.push(image);
+    }
+
+    query = query.slice(0,-2);
+    query += ` where id = ${id} returning *`;
+    return db.query(query, values);
+
 }
 
 export const createUser = (body: usersReq) : Promise<QueryResult<usersReq>> => {
@@ -67,6 +92,5 @@ export const getTotalUser = (id?: number): Promise<QueryResult<{ total_user: num
         query += ' where id = $1';
          values.push(`${id}`);
     }
-    // console.log(query,values)
     return db.query(query,values);
 }

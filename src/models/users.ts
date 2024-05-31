@@ -4,6 +4,7 @@ export interface usersReq {
     email: string;
     password: string;
     address :string;
+    image?: string;
 }
 
 export interface usersQuery {

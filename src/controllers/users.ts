@@ -52,9 +52,19 @@ export const getUsers = async (req: Request<{},{},{},usersQuery>, res: Response)
 
 export const updateUsers = async(req: Request<{id: number},{},usersReq>, res: Response<IUsersRes>) =>{
     try {
+        const { file } = req
         const id = req.params.id;
         const body = req.body;
-        let result = await updateOneUsers(body, id);
+        const {password} = req.body
+        let hashed;
+        
+        if (password) {
+            const salt = await bcrypt.genSalt();
+            hashed = await bcrypt.hash(password, salt);
+        }
+
+        let result = await updateOneUsers(body, id, hashed, file?.filename);
+
         if(result.rows.length === 0 ) {
             return res.status(404).json({
             msg: 'data tak ditemukan',
@@ -130,9 +140,8 @@ export const register = async (req: Request<{},{},usersReg>, res : Response) => 
 
         //simpan keadalam db
         const result = await registerUser(req.body, hashed, file?.filename );
-        console.log(result);
 
-        if(result.rows.length === 0 ) {
+        if(result.rowCount !== 1 ) {
             return res.status(404).json({
             msg: 'gagal register, isi data dengan benar',
             data: [],
