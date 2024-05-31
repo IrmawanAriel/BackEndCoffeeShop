@@ -1,5 +1,7 @@
 import multer, { Field, Options, diskStorage } from "multer";
 import path from "path";
+import { AppParams } from '../models/params';
+import { RequestHandler } from "express";
 
 const multerDisk = diskStorage({
     destination: (req, file, cb) => {
@@ -30,7 +32,19 @@ const multerDisk = diskStorage({
 
   const uploader = multer(multerOptions);
 
-  export const singleUpdloader = (fieldName: string) => uploader.single(fieldName);
+  export const singleUpdloader = (fieldName: string) => uploader.single(fieldName) as RequestHandler<AppParams>;
   export const multiUploader = (fieldName: string, maxCount: number) => uploader.array(fieldName, maxCount);
   export const multiFieldUploader = (fieldConfig: Field[]) => uploader.fields(fieldConfig);
   
+  // export const singleUpdloader = (fieldName: string) => (req: Request<AppParams> , res: Response<AppParams>, next: NextFunction) => {
+  //   const uploaders = uploader.single(fieldName);
+  //     uploaders( req,res, (err) => {
+  //       if (err instanceof Error) {
+  //         return res.status(400).json({
+  //           msg: "Bad Request",
+  //           err: err.message,
+  //         });
+  //       }
+  //     })
+  //   next()
+  // }

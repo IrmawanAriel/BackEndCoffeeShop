@@ -64,12 +64,12 @@ export const GetOneProduct = (product_name: string) => {
 }
 
 
-export const createProduct = (body: productBody): Promise<QueryResult<product>> => {
-    const query = `insert into product (price, description, rating, product_name, stock, category)
-        values ($1,$2,$3,$4,$5,$6)
+export const createProduct = (body: productBody, image?: string): Promise<QueryResult<product>> => {
+    const query = `insert into product (price, description, rating, product_name, stock, category, image)
+        values ($1,$2,$3,$4,$5,$6,$7)
         returning *`;
     const { price, description, rating, product_name, stock, category } = body;
-    const values = [price, description, rating, product_name, stock, category];
+    const values = [price, description, rating, product_name, stock, category, image];
     return db.query(query, values);
 }
 

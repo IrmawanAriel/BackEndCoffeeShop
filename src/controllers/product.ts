@@ -2,7 +2,7 @@
 import { Request, Response } from 'express';
 
 import { createProduct, getAllProduct, GetOneProduct, UpdateProduct, deleteProduct, getTotalProduct, getProdImg } from '../repositories/product';
-import { productBody, productQuerry } from '../models/product';
+import { productBody, productQuerry, productImg } from '../models/product';
 import { IProductRes } from '../models/response';
 import getLink from '../helpers/getLink';
 
@@ -75,15 +75,23 @@ export const getDetailProduct = async (req: Request<{nama_produk: string}> , res
 
 export const createNewProduct = async (req: Request<{},{}, productBody>, res: Response<IProductRes>) => {
     
-    try{
-        const result = await createProduct(req.body);
+    const { file } = req;
+    // console.log(req.body);
+    if (!file)
+        return res.status(400).json({
+        msg: "file tidak ada",
+        err: "masukan file berjenis JPG dsb",
+        });
+    try {
+        const result = await createProduct(req.body, file.filename);
         return res.status(201).json({
-            msg: 'succes created',
-            data: result.rows
-        }) 
+        msg: "success",
+        data: result.rows,
+        });
     } catch (err: unknown){
         if (err instanceof Error){
             console.log(err.message);
+            
         }
         return res.status(500).json({
             msg: "error",

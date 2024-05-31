@@ -1,3 +1,4 @@
+import { ParamsDictionary } from 'express-serve-static-core';
 export interface product {
     id: number;
     description: string;
@@ -17,7 +18,12 @@ export interface productBody {
     rating: number;
     stock: number;
     category: string;
+    json: string[];
 
+}
+
+export interface ParamsIProduct {
+    id: number
 }
 
 export interface productImg {

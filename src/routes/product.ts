@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { getProduct, getDetailProduct, createNewProduct, UpdateOneProduct, deleteProductrow, UploadProductImg } from "../controllers/product"; 
-import { singleUpdloader } from "../middlewares/upload";
+import { multiFieldUploader, singleUpdloader } from "../middlewares/upload";
 
 // import { product } from '../models/product';
 
@@ -10,12 +10,13 @@ productrouter.get("/",getProduct)
 
 productrouter.get("/:nama_produk", getDetailProduct) 
 
-productrouter.post("/", createNewProduct);
+productrouter.post("/create", singleUpdloader("image") , createNewProduct);
 
-productrouter.put("/:id", UpdateOneProduct);
+productrouter.patch("/:id", singleUpdloader("image") , UpdateOneProduct);
 
 productrouter.delete("/:id", deleteProductrow);
 
-productrouter.patch("/:id/ProductImage", singleUpdloader("ProductImage") , UploadProductImg )
+// productrouter.patch("/:id/ProductImage", singleUpdloader("ProductImage") , UploadProductImg )
+
 
 export default productrouter;
