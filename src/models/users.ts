@@ -41,4 +41,5 @@ export interface usersReg {
 export interface usersLogin {
     email: string;
     password: string;
+    role: string
 }

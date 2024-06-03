@@ -165,7 +165,7 @@ export const register = async (req: Request<{},{},usersReg>, res : Response) => 
 
 export const login = async (req: Request<{}, {}, usersLogin>, res: Response<{msg: string; err?: string; data?: {token: string}[]}>) => {
     try{
-        const {email, password} = req.body;
+        const {email, role, password} = req.body;
         const checkUser = await loginUser(email);
 
         //error handling jika no user
@@ -180,7 +180,8 @@ export const login = async (req: Request<{}, {}, usersLogin>, res: Response<{msg
         
         //jika cocok maka beri payload
         const payload: payloadInterface = {
-            email
+            email,
+            role
         };
 
         const token = Jwt.sign( payload, <string>process.env.JWT_SECRET, jwtOptions )

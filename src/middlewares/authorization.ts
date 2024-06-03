@@ -11,6 +11,7 @@ export const jwtOptions: SignOptions = {
 
 export const authorization = (role?: string[]) =>  (req: Request<AppParams> , res: Response<AppParams>, next: NextFunction) => {
     const bearerToken = req.header("Authorization");
+    // console.log(req.);
     if(!bearerToken) {
         return res.status(401).json({
           msg: "forbien",
