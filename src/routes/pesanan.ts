@@ -3,7 +3,7 @@ import { createPesanan, deleteOnePesanan, GetPesananData, updateOnePesanan } fro
 
 const pesananRouter = Router();
 
-pesananRouter.get("/", GetPesananData);
+pesananRouter.get("/:id", GetPesananData);
 
 pesananRouter.post("/", createPesanan);
 

@@ -1,6 +1,5 @@
 export interface pesananModel {
-        id: number;
-        product_id: number;
+        id?: number;
         user_id: number;
         status: number;
         quantity: number;

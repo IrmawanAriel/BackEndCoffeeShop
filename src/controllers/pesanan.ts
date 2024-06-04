@@ -3,17 +3,19 @@ import { pesananModel, deletePesanan } from '../models/pesanan';
 import { GetPesanan, UpdatePesanan, createNewPesanan, deletDataPesanan, getTotalPesanan } from '../repositories/Pesanan';
 import getLink from '../helpers/getLink';
 
-export const GetPesananData = async (req: Request<{},{},{},pesananModel>, res: Response) => {
+export const GetPesananData = async (req: Request<{id: number},{},{},pesananModel>, res: Response) => {
     
     try{
-        const { page, limit, id } = req.query;
-        console.log(page, limit, id)
+        const { id } = req.params
+        const { page, limit } = req.query;
+        // console.log(page, limit, id)
         const result = await GetPesanan( id, parseInt(page), parseInt(limit));
         if(result.rows.length === 0 ) {
             return res.status(404).json({
             msg: 'data tak ditemukan',
             data: [],
         })}
+        
          //mendaptkan total pesanan
          const TotdataPesanan = await getTotalPesanan( id);
 

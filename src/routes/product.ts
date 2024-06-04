@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { getProduct, getDetailProduct, createNewProduct, UpdateOneProduct, deleteProductrow, UploadProductImg } from "../controllers/product"; 
 import { multiFieldUploader, singleUpdloader } from "../middlewares/upload";
+import { authorization } from "../middlewares/authorization";
 
 // import { product } from '../models/product';
 
@@ -10,9 +11,9 @@ productrouter.get("/",getProduct)
 
 productrouter.get("/:nama_produk", getDetailProduct) 
 
-productrouter.post("/create", singleUpdloader("image") , createNewProduct);
+productrouter.post("/create",  authorization(['admin']),singleUpdloader("image") , createNewProduct);
 
-productrouter.patch("/:id", singleUpdloader("image") , UpdateOneProduct);
+productrouter.patch("/:id", authorization(['admin']), singleUpdloader("image") , UpdateOneProduct);
 
 productrouter.delete("/:id", deleteProductrow);
 

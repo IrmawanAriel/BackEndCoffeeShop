@@ -165,14 +165,15 @@ export const register = async (req: Request<{},{},usersReg>, res : Response) => 
 
 export const login = async (req: Request<{}, {}, usersLogin>, res: Response<{msg: string; err?: string; data?: {token: string}[]}>) => {
     try{
-        const {email, role, password} = req.body;
+        const {email,  password} = req.body;
         const checkUser = await loginUser(email);
 
         //error handling jika no user
         if(!checkUser.rows.length) throw new Error ('No user has found.');
+        console.log(checkUser.rows[0].role)
 
         //jika ditemukan usernya
-        const {password: hashedPwd, fullname } = checkUser.rows[0];
+        const {password: hashedPwd, fullname , role} = checkUser.rows[0];
         const checkPass = await bcrypt.compare( password , hashedPwd );
 
         //error handling jika no pass match

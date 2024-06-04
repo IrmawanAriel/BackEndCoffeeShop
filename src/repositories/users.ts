@@ -73,8 +73,8 @@ export const registerUser = (body: usersReg , hashed: string, image?: string): P
     return db.query(Query, values);
 }
 
-export const loginUser = (email: string): Promise<QueryResult<{ fullname: string; password: string}>> => {
-    const Query = "select fullname, password from users where email = $1";
+export const loginUser = (email: string): Promise<QueryResult<{ fullname: string; password: string; role: string}>> => {
+    const Query = "select fullname, password, role from users where email = $1";
     const values = [email];
     return db.query(Query, values);
 }
