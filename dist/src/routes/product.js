@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const product_1 = require("../controllers/product");
+const upload_1 = require("../middlewares/upload");
+const authorization_1 = require("../middlewares/authorization");
+// import { product } from '../models/product';
+const productrouter = (0, express_1.Router)();
+productrouter.get("/", product_1.getProduct);
+productrouter.get("/:nama_produk", product_1.getDetailProduct);
+productrouter.post("/create", (0, authorization_1.authorization)(['admin']), (0, upload_1.singleUpdloader)("image"), product_1.createNewProduct);
+productrouter.patch("/:id", (0, authorization_1.authorization)(['admin']), (0, upload_1.singleUpdloader)("image"), product_1.UpdateOneProduct);
+productrouter.delete("/:id", product_1.deleteProductrow);
+exports.default = productrouter;

@@ -12,10 +12,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false}));
 
 var corsOptions = {
-    origin: ['http://localhost:8000','http://127.0.0.1:5500'],
+    origin: ['http://localhost:8000','http://localhost:8080','http://127.0.0.1:5500'], //vite 8080
     methods: "PUT" // some legacy browsers (IE11, various SmartTVs) choke on 204
   }
 app.use(cors(corsOptions));
+
+app.use(express.static("./public/imgs"));
 
 
 app.use(express.json());

@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const pesanan_1 = require("../controllers/pesanan");
+const pesananRouter = (0, express_1.Router)();
+pesananRouter.get("/:id", pesanan_1.GetPesananData);
+pesananRouter.post("/", pesanan_1.createPesanan);
+pesananRouter.put("/:id", pesanan_1.updateOnePesanan);
+pesananRouter.delete("/:id", pesanan_1.deleteOnePesanan);
+exports.default = pesananRouter;

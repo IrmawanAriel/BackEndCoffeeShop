@@ -1,9 +1,6 @@
-import { query, Request, Response } from "express";
-import { GetPesananData } from "../controllers/pesanan";
 import { deletePesanan, pesananModel } from "../models/pesanan";
 import { QueryResult } from "pg";
 import db from "../configs/pg";
-
 
 export const GetPesanan = async (id?: number, page?: number, limit?: number): Promise<QueryResult<pesananModel>> => {
     let query = `SELECT SUM(
@@ -31,14 +28,12 @@ export const GetPesanan = async (id?: number, page?: number, limit?: number): Pr
         values.push((page - 1) * limit);
     }
 
-    // query += ' returning user_id, status, takeaway, total, orderdate ';
 
     const result = await db.query(query,values);
 
     if(result.rows.length > 0) {
         let total_order = Math.round(result.rows[0].total_order);
 
-        // Meng-update total order di tabel orders
         query = `UPDATE orders SET total = $1 WHERE id = $2`;
         values = [total_order, id];
         await db.query(query, values);

@@ -29,10 +29,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv = __importStar(require("dotenv"));
 dotenv.config();
+const routes_1 = __importDefault(require("./src/routes"));
+const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
+app.use(express_1.default.json());
+app.use(express_1.default.urlencoded({ extended: false }));
+var corsOptions = {
+    origin: ['http://localhost:8000', 'http://127.0.0.1:5500'],
+    methods: "PUT" // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+app.use((0, cors_1.default)(corsOptions));
+app.use(express_1.default.json());
+app.use(express_1.default.urlencoded({
+    extended: false
+}));
 app.get("/", (req, res) => {
     res.send("OK");
 });
+app.use(routes_1.default);
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
     console.log(`server is runing on ${PORT}`);
