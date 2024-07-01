@@ -5,7 +5,7 @@ import { AppParams, queryParams } from "../models/params";
 import { productQuerry } from "../models/product";
 
 const getLink = (req: Request<AppParams, {}, {}, queryParams>, info?: "previous" | "next"): string => {
-  const { path, hostname, query, protocol} = req;
+  const { path, hostname, query, protocol,baseUrl} = req;
 
   if(!query.page){
     query.page = "1";
@@ -28,7 +28,7 @@ const getLink = (req: Request<AppParams, {}, {}, queryParams>, info?: "previous"
     return str.join("&");
   };
 
-  const url = new URL(`${protocol}://${hostname}:${process.env.PORT}${path}`);
+  const url = new URL(`${protocol}://${hostname}:${process.env.PORT}${baseUrl}${path}`);
   url.search = serialize(newQuery);
 
   return url.toString();

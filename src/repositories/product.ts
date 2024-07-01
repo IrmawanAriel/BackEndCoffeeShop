@@ -1,17 +1,15 @@
-import { Query, QueryResult } from "pg";
-
+import { QueryResult } from "pg";
 import db from "../configs/pg";
 import { product, productBody, productImg, productQuerry } from '../models/product';
 
-
 export const getAllProduct = ({category,harga_max,harga_min,limit,page ,product_name,promo,sort,stock}: productQuerry): Promise<QueryResult<product>> => {
-    let query = `select * from product`; // 1.
+    let query = `select distinct  price , description ,rating , image ,"uuid", category, product_name, id from product`; // 1.
     const values = [];
     
-    if (promo === "tidak") {
-        query += " LEFT JOIN promo_product ON product.id = promo_product.product_id WHERE promo_product.promo_id IS NULL"; // 2. left join
+    if (promo === "true") {
+        query += " INNER JOIN promo_product ON product.id = promo_product.product_id WHERE promo_product.promo_id IS NOT NULL"; // 2. left join
     } else {
-        query += " INNER JOIN promo_product ON product.id = promo_product.product_id WHERE promo_product.promo_id IS NOT NULL"; // inner
+        query += " LEFT JOIN promo_product ON product.id = promo_product.product_id WHERE promo_product.promo_id IS NULL"; // inner
     }
 
     query += " AND true";
@@ -20,11 +18,12 @@ export const getAllProduct = ({category,harga_max,harga_min,limit,page ,product_
         query += " and product_name ilike $" + (values.length + 1);
         values.push(`%${product_name}%`)
     }
-    // console.log(values.length)
+
     if (category) {
         query += " and category ilike $" + (values.length + 1);
         values.push(`%${category}%`)
     }
+
     if (stock === "tersedia") {
         query += " and stock !=0";
     }
@@ -52,14 +51,13 @@ export const getAllProduct = ({category,harga_max,harga_min,limit,page ,product_
         values.push((parseInt(page) - 1) * parseInt(limit));
     }
 
-    // console.log(query);
+    // console.log(db.query(query, values));
     return db.query(query, values);
 }
 
-export const GetOneProduct = (product_name: string) => {
-    const query = "SELECT * FROM product WHERE product_name = $1";
-    const values = [product_name]; 
-    console.log(product_name);
+export const GetOneProduct = (id: number) => {
+    const query = "SELECT * FROM product WHERE id = $1";
+    const values = [id]; 
     return db.query(query, values);
 }
 
@@ -106,7 +104,6 @@ export const UpdateProduct =  (id: number, body: productBody ,image?: string): P
         query = query.slice(0, -2); //hapus koma dan spasi
         query += ` WHERE id=$${(values.length + 1)} RETURNING *`;
         values.push(id);
-        console.log(query)
     
         return db.query(query, values);
 

@@ -9,6 +9,8 @@ export interface pesananModel {
         orderdate: Date;
         page: string;
         limit: string;
+        destination: string;
+        payment_method: string;
 }
 
 export interface deletePesanan {

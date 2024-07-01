@@ -9,7 +9,7 @@ const productrouter = Router();
 
 productrouter.get("/",getProduct)
 
-productrouter.get("/:nama_produk", getDetailProduct) 
+productrouter.get("/:id", getDetailProduct) 
 
 productrouter.post("/create",  authorization(['admin']),singleUpdloader("image") , createNewProduct);
 

@@ -11,7 +11,7 @@ export interface product {
 }
 
 export interface productBody {
-    id?: number;
+    id: number;
     description: string;
     price: number;
     product_name?: string;

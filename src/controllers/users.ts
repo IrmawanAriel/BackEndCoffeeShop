@@ -163,7 +163,7 @@ export const register = async (req: Request<{},{},usersReg>, res : Response) => 
     }
 }
 
-export const login = async (req: Request<{}, {}, usersLogin>, res: Response<{msg: string; err?: string; data?: {token: string}[]}>) => {
+export const login = async (req: Request<{}, {}, usersLogin>, res: Response<{msg: string; id?: number ;err?: string; data?: {token: string}[]}>) => {
     try{
         const {email,  password} = req.body;
         const checkUser = await loginUser(email);
@@ -173,7 +173,7 @@ export const login = async (req: Request<{}, {}, usersLogin>, res: Response<{msg
         console.log(checkUser.rows[0].role)
 
         //jika ditemukan usernya
-        const {password: hashedPwd, fullname , role} = checkUser.rows[0];
+        const {password: hashedPwd, fullname , role, id} = checkUser.rows[0];
         const checkPass = await bcrypt.compare( password , hashedPwd );
 
         //error handling jika no pass match
@@ -188,6 +188,7 @@ export const login = async (req: Request<{}, {}, usersLogin>, res: Response<{msg
         const token = Jwt.sign( payload, <string>process.env.JWT_SECRET, jwtOptions )
         return res.status(200).json({
             msg: "selamat datang, " + fullname,
+            id: id,
             data: [{ token }]
         });
 
