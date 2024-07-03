@@ -104,8 +104,8 @@ export const createNewPesanan = (body: pesananModel): Promise<QueryResult<pesana
 }
 
 export const UpdatePesanan = (body: pesananModel, id: number): Promise<QueryResult<pesananModel>> => {
-    const query = "UPDATE orders SET user_id = $1, status = $2, ice = $3, takeaway = $4, total = $5 WHERE id = $6 returning *";
-    const values = [ body.user_id, body.status , body.ice, body.takeaway, body.total, id];
+    const query = "UPDATE orders SET user_id = $1, status = $2, takeaway = $3, total = $4 WHERE id = $5 returning *";
+    const values = [ body.user_id, body.status , body.takeaway, body.total, id];
     return db.query(query, values)
 }
 
