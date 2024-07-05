@@ -18,7 +18,7 @@ export const getUsers = async (req: Request<{},{},{},usersQuery>, res: Response)
             data: [],
         })}
         //mendaptkan total pesanan
-         const TotdataUser = await getTotalUser( id);
+         const TotdataUser = await getTotalUser(id);
 
          //mendapatkan value page untuk di oper ke response
          const pageUser = parseInt(page || '1');
@@ -173,7 +173,7 @@ export const login = async (req: Request<{}, {}, usersLogin>, res: Response<{msg
         console.log(checkUser.rows[0].role)
 
         //jika ditemukan usernya
-        const {password: hashedPwd, fullname , role, id} = checkUser.rows[0];
+        const {password: hashedPwd, fullname , role, uuid} = checkUser.rows[0];
         const checkPass = await bcrypt.compare( password , hashedPwd );
 
         //error handling jika no pass match
@@ -182,13 +182,13 @@ export const login = async (req: Request<{}, {}, usersLogin>, res: Response<{msg
         //jika cocok maka beri payload
         const payload: payloadInterface = {
             email,
-            role
+            uuid,
+            role,
         };
 
         const token = Jwt.sign( payload, <string>process.env.JWT_SECRET, jwtOptions )
         return res.status(200).json({
             msg: "selamat datang, " + fullname,
-            id: id,
             data: [{ token }]
         });
 
