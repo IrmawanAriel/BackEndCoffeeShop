@@ -1,15 +1,12 @@
-// export const getPostgres;
 import { Request, Response } from 'express';
-
-import { createProduct, getAllProduct, GetOneProduct, UpdateProduct, deleteProduct, getTotalProduct, getProdImg } from '../repositories/product';
-import { productBody, productQuerry } from '../models/product';
+import { createProduct, getAllProduct, GetOneProduct, UpdateProduct, deleteProduct, getTotalProduct, getProdImg, makeProductOrderRelation, getProductOrderRelation } from '../repositories/product';
+import { productBody, ProductOrderRelation, productQuerry } from '../models/product';
 import { IProductRes } from '../models/response';
 import getLink from '../helpers/getLink';
 
 export const getProduct = async (req: Request<{},{},{},productQuerry>, res: Response<IProductRes>)=>{
     try {
         const result = await getAllProduct(req.query);
-        // console.log(result.rows[0])
         if(result.rows.length === 0 ) {
             return res.status(404).json({
             msg: 'data tak ditemukan',
@@ -69,7 +66,6 @@ export const getDetailProduct = async (req: Request<{id: number}> , res: Respons
 }
 
 export const createNewProduct = async (req: Request<{},{}, productBody>, res: Response<IProductRes>) => {
-    
     const { file } = req;
     if (!file)
         return res.status(400).json({
@@ -161,5 +157,44 @@ export const UploadProductImg = async (req: Request<{id: string}>, res: Response
         msg: "Error",
         err: "Internal Server Error",
       });
+    }
+}
+
+export const createOrderRelation = async (req: Request<{},{},ProductOrderRelation> , res: Response) => {
+    try{
+        const result = await makeProductOrderRelation( req.body )
+        return res.status(200).json({
+            msg: 'insert succed',
+            data: result.rows
+        }) 
+    }catch(err: unknown){
+        if (err instanceof Error){
+            console.log(err.message);
+        }
+        return res.status(500).json({
+            msg: "error",
+            err: "internal server error"
+        });
+    }
+}
+
+export const getOrderRelation = async (req: Request< {idOrder: number} > , res: Response) => {
+
+    const {idOrder} = req.params;
+    try {
+        const result = await getProductOrderRelation( idOrder );
+        return res.status(200).json({
+            msg: 'get succed',
+            data: result
+        }) 
+    } 
+    catch (error: unknown) {
+        if (error instanceof Error){
+            console.log(error.message);
+        }
+        return res.status(500).json({
+            msg: "error",
+            err: "internal server error"
+        });
     }
 }

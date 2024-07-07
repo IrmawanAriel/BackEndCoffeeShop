@@ -1,6 +1,7 @@
 import { QueryResult } from "pg";
 import db from "../configs/pg";
-import { product, productBody, productImg, productQuerry } from '../models/product';
+import { product, productBody, productImg, ProductOrderRelation, productQuerry } from '../models/product';
+import { query } from 'express';
 
 export const getAllProduct = ({category,harga_max,harga_min,limit,page ,product_name,promo,sort,stock}: productQuerry): Promise<QueryResult<product>> => {
     let query = `select distinct  price , description ,rating , image ,"uuid", category, product_name, id from product`; // 1.
@@ -130,5 +131,17 @@ export const getTotalProduct = ({ product_name }: productQuerry): Promise<QueryR
 export const getProdImg = (id: number, image?: string): Promise<QueryResult<productImg>> => {
     const query = "update product set image = $1 where id = $2 ";
     const values = [image || null, id];
+    return db.query(query, values);
+}
+
+export const makeProductOrderRelation = (body:ProductOrderRelation )  => {
+    const query = 'insert into order_product ( order_id, product_id, ice, quantity ) values ($1,$2,$3,$4) returning *';
+    const values = [body.order_id , body.product_id, body.ice , body.quantity ];
+    return db.query(query, values);
+}
+
+export const getProductOrderRelation = ( id: number): Promise<QueryResult<ProductOrderRelation[]>> => {
+    const query = 'select order_id, product_id, ice, quantity from order_product where order_id = $1 ';
+    const values = [id];
     return db.query(query, values);
 }

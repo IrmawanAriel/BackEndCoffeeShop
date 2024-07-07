@@ -1,13 +1,16 @@
 import {Query, QueryResult} from "pg";
 import db from "../configs/pg";
-import { usersReq, usersGet, usersReg, usersGetId, UsersParam } from "../models/users";
-import { query } from 'express';
+import { usersReq, usersReg, usersGetId, UsersParam, usersGetUuid } from "../models/users";
 
-export const getAllUsers = (fullname?: string, limit?: number | undefined, page?: string | undefined): Promise<QueryResult<usersGet>> => {
-    let query = "select fullname, email, address from users";
+export const getAllUsers = (fullname?: string, limit?: number | undefined, uuid? : string ,page?: string | undefined): Promise<QueryResult<usersGetUuid>> => {
+    let query = "select fullname, email, uuid , address from users";
     const values= [];
+    if (uuid) {
+        query += ` where uuid = $${values.length + 1}`;
+        values.push(uuid)
+    }
     if (fullname) {
-        query += " where fullname ilike $1";
+        query += ` where fullname ilike $${values.length + 1}`;
         values.push(`%${fullname}%`)
     }
     if (limit) {
@@ -74,7 +77,7 @@ export const registerUser = (body: usersReg , hashed: string, image?: string): P
 }
 
 export const loginUser = (email: string): Promise<QueryResult<{id: number, fullname: string; password: string; role: string; uuid: string}>> => {
-    const Query = "select fullname, uuid , password, role from users where email = $1";
+    const Query = "select fullname, uuid, id , password, role from users where email = $1";
     const values = [email];
     
     return db.query(Query, values);

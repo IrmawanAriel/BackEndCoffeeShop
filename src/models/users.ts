@@ -12,6 +12,7 @@ export interface usersQuery {
     fullname?: string;    
     page?: string;
     limit?: number;
+    uuid?: string;
 }
 
 export interface usersGetId{
@@ -28,6 +29,14 @@ export interface usersGet {
     fullname: string;
     email: string;
     address :string;
+}
+
+export interface usersGetUuid {
+    id: number;
+    fullname: string;
+    email: string;
+    address :string;
+    uuid: string;
 }
 
 export interface usersReg {

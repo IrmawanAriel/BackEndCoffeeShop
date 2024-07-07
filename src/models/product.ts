@@ -44,3 +44,10 @@ export interface productQuerry {
     limit?: string;
 
 }
+
+export interface ProductOrderRelation {
+    order_id: number;
+    product_id: number;
+    quantity: number;
+    ice: boolean;
+}

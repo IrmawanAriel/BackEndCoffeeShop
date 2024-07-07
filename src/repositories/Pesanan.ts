@@ -46,7 +46,6 @@ export const GetPesanan = async (id?: number, page?: number, limit?: number): Pr
   let query = `
     SELECT 
       orders.id, 
-      orders.ice, 
       orders.takeaway,
       orders.destination, 
       orders.payment_method,  
@@ -98,8 +97,8 @@ export const GetPesanan = async (id?: number, page?: number, limit?: number): Pr
 
 
 export const createNewPesanan = (body: pesananModel): Promise<QueryResult<pesananModel>> => {   
-    const query = "insert into orders (user_id, status,  ice, takeaway, total) values ($1,$2,$3,$4,$5)";
-    const values = [ body.user_id, body.status, body.ice, body.takeaway, body.total];
+    const query = "insert into orders (user_id, status, takeaway, total) values ($1,$2,$3,$4) returning *";
+    const values = [ body.user_id, body.status, body.takeaway, body.total];
     return db.query(query, values)
 }
 

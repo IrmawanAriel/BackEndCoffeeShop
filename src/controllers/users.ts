@@ -10,8 +10,9 @@ import { IUsersRes } from '../models/response';
 
 export const getUsers = async (req: Request<{},{},{},usersQuery>, res: Response)=>{
     try {
-        const { fullname, page , limit, id } =  req.query;
-        const result =await getAllUsers( fullname, limit , (page as string) );
+        const { fullname, page , limit, id, uuid } =  req.query;
+        console.log(uuid);
+        const result = await getAllUsers( fullname, limit , uuid , (page as string) );
         if(result.rows.length === 0 ) {
             return res.status(404).json({
             msg: 'data tak ditemukan',
@@ -163,7 +164,7 @@ export const register = async (req: Request<{},{},usersReg>, res : Response) => 
     }
 }
 
-export const login = async (req: Request<{}, {}, usersLogin>, res: Response<{msg: string; id?: number ;err?: string; data?: {token: string}[]}>) => {
+export const login = async (req: Request<{}, {}, usersLogin>, res: Response<{msg: string; id?: number ;err?: string; data?: {token: string; id?: number}[]}>) => {
     try{
         const {email,  password} = req.body;
         const checkUser = await loginUser(email);
@@ -173,7 +174,7 @@ export const login = async (req: Request<{}, {}, usersLogin>, res: Response<{msg
         console.log(checkUser.rows[0].role)
 
         //jika ditemukan usernya
-        const {password: hashedPwd, fullname , role, uuid} = checkUser.rows[0];
+        const {password: hashedPwd, fullname , role, uuid, id} = checkUser.rows[0];
         const checkPass = await bcrypt.compare( password , hashedPwd );
 
         //error handling jika no pass match
@@ -182,14 +183,14 @@ export const login = async (req: Request<{}, {}, usersLogin>, res: Response<{msg
         //jika cocok maka beri payload
         const payload: payloadInterface = {
             email,
-            uuid,
+            id,
             role,
         };
 
         const token = Jwt.sign( payload, <string>process.env.JWT_SECRET, jwtOptions )
         return res.status(200).json({
             msg: "selamat datang, " + fullname,
-            data: [{ token }]
+            data: [{ token }],
         });
 
     } catch (error) {
