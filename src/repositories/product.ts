@@ -135,13 +135,13 @@ export const getProdImg = (id: number, image?: string): Promise<QueryResult<prod
 }
 
 export const makeProductOrderRelation = (body:ProductOrderRelation )  => {
-    const query = 'insert into order_product ( order_id, product_id, ice, quantity ) values ($1,$2,$3,$4) returning *';
-    const values = [body.order_id , body.product_id, body.ice , body.quantity ];
+    const query = 'insert into order_product ( order_id, product_id, ice, quantity, size ) values ($1,$2,$3,$4, $5) returning *';
+    const values = [body.order_id , body.product_id, body.ice , body.quantity, body.size ];
     return db.query(query, values);
 }
 
 export const getProductOrderRelation = ( id: number): Promise<QueryResult<ProductOrderRelation[]>> => {
-    const query = 'select order_id, product_id, ice, quantity from order_product where order_id = $1 ';
+    const query = 'select order_id, product_id, ice, quantity, size from order_product where order_id = $1 ';
     const values = [id];
     return db.query(query, values);
 }

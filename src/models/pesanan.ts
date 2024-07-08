@@ -11,6 +11,8 @@ export interface pesananModel {
         limit: string;
         destination: string;
         payment_method: string;
+        fullname: string;
+        email: string;
 }
 
 export interface deletePesanan {

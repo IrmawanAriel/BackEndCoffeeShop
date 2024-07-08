@@ -50,4 +50,5 @@ export interface ProductOrderRelation {
     product_id: number;
     quantity: number;
     ice: boolean;
+    size: string;
 }
