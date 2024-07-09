@@ -107,3 +107,27 @@ export const deleteOnePesanan = async (req: Request<{id: deletePesanan}>, res: R
     }
 } 
 
+export const GetPesananDataByUser = async (req: Request<{id: number}>, res: Response) => {
+    
+    try {
+        const {id} = req.params;
+        const result = await getDataPesananByUser(id);
+        if(result.rows.length === 0 ) {
+            return res.status(404).json({
+            msg: 'data tak ditemukan',
+            data: [],
+        })}
+        return res.status(200).json({
+            msg: "sucses",
+            data: result.rows
+        });
+    } catch (err: unknown){
+        if (err instanceof Error){
+            console.log(err.message);
+        }
+        return res.status(500).json({
+            msg: "error",
+            err: "internal server error"
+        })
+    }
+}
