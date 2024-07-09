@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createPesanan, deleteOnePesanan, GetPesananData, updateOnePesanan } from "../controllers/pesanan";
+import { createPesanan, deleteOnePesanan, GetPesananData, updateOnePesanan, GetPesananDataByUser } from "../controllers/pesanan";
 
 const pesananRouter = Router();
 
@@ -10,5 +10,8 @@ pesananRouter.post("/", createPesanan);
 pesananRouter.put("/:id", updateOnePesanan);
 
 pesananRouter.delete("/:id", deleteOnePesanan );
+
+pesananRouter.get("/user/:id", GetPesananDataByUser);
+
 
 export default  pesananRouter;
