@@ -125,3 +125,9 @@ export const getTotalPesanan = (id?: number): Promise<QueryResult<{ total_order:
     // console.log(query,values)
     return db.query(query,values);
 }
+
+export const getDataPesananByUser = (id: number): Promise<QueryResult<pesananModel>> => {
+  const query = "select * from orders where user_id = $1";
+  const values = [id];
+  return db.query(query, values)
+}

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { pesananModel, deletePesanan } from '../models/pesanan';
-import { GetPesanan, UpdatePesanan, createNewPesanan, deletDataPesanan, getTotalPesanan } from '../repositories/Pesanan';
+import { GetPesanan, UpdatePesanan, createNewPesanan, deletDataPesanan, getDataPesananByUser, getTotalPesanan } from '../repositories/Pesanan';
 import getLink from '../helpers/getLink';
 
 export const GetPesananData = async (req: Request<{id: number},{},{},pesananModel>, res: Response) => {
