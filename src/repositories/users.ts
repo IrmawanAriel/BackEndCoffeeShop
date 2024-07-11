@@ -26,7 +26,7 @@ export const getAllUsers = (fullname?: string, limit?: number | undefined, uuid?
 }
 
 export const updateOneUsers = (body: usersReq, id: number, hashed?: string, image?: string): Promise<QueryResult<usersReq>> => {
-    const { fullname, email } = body
+    const { fullname, email, address, phone } = body
     let query = "update users set ";
     const values = [];
 
@@ -38,6 +38,16 @@ export const updateOneUsers = (body: usersReq, id: number, hashed?: string, imag
     if (email) {
         query += `email = $${values.length + 1}, `;
         values.push(email);
+    }
+
+    if (address) {
+        query += `address = $${values.length + 1}, `;
+        values.push(address);
+    }
+
+    if (phone) {
+        query += `phone = $${values.length + 1}, `;
+        values.push(phone);
     }
 
     if (hashed) {

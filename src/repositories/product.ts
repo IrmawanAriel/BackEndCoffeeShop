@@ -1,7 +1,6 @@
 import { QueryResult } from "pg";
 import db from "../configs/pg";
 import { product, productBody, productImg, ProductOrderRelation, productQuerry } from '../models/product';
-import { query } from 'express';
 
 export const getAllProduct = ({category,harga_max,harga_min,limit,page ,product_name,promo,sort,stock}: productQuerry): Promise<QueryResult<product>> => {
     let query = `select distinct  price , description ,rating , image ,"uuid", category, product_name, id from product`; // 1.
