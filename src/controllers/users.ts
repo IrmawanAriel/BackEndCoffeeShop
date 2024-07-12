@@ -58,7 +58,8 @@ export const updateUsers = async(req: Request<{id: number},{},usersReq>, res: Re
         const body = req.body;
         const {password} = req.body
         let hashed;
-        
+        console.log(file?.filename);
+
         if (password) {
             const salt = await bcrypt.genSalt();
             hashed = await bcrypt.hash(password, salt);
@@ -164,7 +165,7 @@ export const register = async (req: Request<{},{},usersReg>, res : Response) => 
     }
 }
 
-export const login = async (req: Request<{}, {}, usersLogin>, res: Response<{msg: string; id?: number ;err?: string; data?: {token: string; id?: number}[]}>) => {
+export const login = async (req: Request<{}, {}, usersLogin>, res: Response<{msg: string; id?: number;  image?: string; err?: string; data?: {token: string;} []}>) => {
     try{
         const {email,  password} = req.body;
         const checkUser = await loginUser(email);
@@ -174,7 +175,7 @@ export const login = async (req: Request<{}, {}, usersLogin>, res: Response<{msg
         console.log(checkUser.rows[0].role)
 
         //jika ditemukan usernya
-        const {password: hashedPwd, fullname , role, uuid, id} = checkUser.rows[0];
+        const {password: hashedPwd, fullname , role, uuid, id, image} = checkUser.rows[0];
         const checkPass = await bcrypt.compare( password , hashedPwd );
 
         //error handling jika no pass match
@@ -189,7 +190,8 @@ export const login = async (req: Request<{}, {}, usersLogin>, res: Response<{msg
 
         const token = Jwt.sign( payload, <string>process.env.JWT_SECRET, jwtOptions )
         return res.status(200).json({
-            msg: "selamat datang, " + fullname,
+            msg: "selamat datang, " + fullname, 
+            image: image,
             data: [{ token }],
         });
 

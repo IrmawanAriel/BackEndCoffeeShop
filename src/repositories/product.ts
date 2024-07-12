@@ -2,58 +2,67 @@ import { QueryResult } from "pg";
 import db from "../configs/pg";
 import { product, productBody, productImg, ProductOrderRelation, productQuerry } from '../models/product';
 
-export const getAllProduct = ({category,harga_max,harga_min,limit,page ,product_name,promo,sort,stock}: productQuerry): Promise<QueryResult<product>> => {
-    let query = `select distinct  price , description ,rating , image ,"uuid", category, product_name, id from product`; // 1.
+export const getAllProduct = ({ category, harga_max, harga_min, limit, page, product_name, promo, sort, stock }: productQuerry): Promise<QueryResult<product>> => {
+    let query = `SELECT price, description, rating, image, "uuid", category, product_name, id FROM product`;
     const values = [];
-    
+    const conditions = [];
+
     if (promo === "true") {
-        query += " INNER JOIN promo_product ON product.id = promo_product.product_id WHERE promo_product.promo_id IS NOT NULL"; // 2. left join
+        query += " INNER JOIN promo_product ON product.id = promo_product.product_id WHERE promo_product.promo_id IS NOT NULL";
     } else {
-        query += " LEFT JOIN promo_product ON product.id = promo_product.product_id WHERE promo_product.promo_id IS NULL"; // inner
+        query += " WHERE true";
     }
 
-    query += " AND true";
-
     if (product_name) {
-        query += " and product_name ilike $" + (values.length + 1);
-        values.push(`%${product_name}%`)
+        conditions.push(`product_name ILIKE $${values.length + 1}`);
+        values.push(`%${product_name}%`);
     }
 
     if (category) {
-        query += " and category ilike $" + (values.length + 1);
-        values.push(`%${category}%`)
+        conditions.push(`category ILIKE $${values.length + 1}`);
+        values.push(`%${category}%`);
     }
 
     if (stock === "tersedia") {
-        query += " and stock !=0";
+        conditions.push("stock != 0");
     }
 
     if (harga_min) {
-        query += " and price >= $" + (values.length + 1);
-        values.push(harga_min)
+        conditions.push(`price >= $${values.length + 1}`);
+        values.push(harga_min);
     }
+
     if (harga_max) {
-        query += " and price <= $" + (values.length + 1);
-        values.push(harga_max)
+        conditions.push(`price <= $${values.length + 1}`);
+        values.push(harga_max);
     }
-    if (sort) { /// price asc
+
+    if (conditions.length > 0) {
+        query += " AND " + conditions.join(" AND ");
+    }
+
+    if (sort) {
         const [column, order] = sort.split(' ');
         if (['asc', 'desc'].includes(order.toLowerCase()) && column) {
-            query += ` order by ${column} ${order}`;
+            query += ` ORDER BY ${column} ${order}`;
         }
     }
+
     if (limit) {
-        query += " limit $" + (values.length + 1);
+        query += ` LIMIT $${values.length + 1}`;
         values.push(limit);
     }
-    if (page && limit) { //default val
-        query += " offset $" + (values.length + 1);
+
+    if (page && limit) {
+        query += ` OFFSET $${values.length + 1}`;
         values.push((parseInt(page) - 1) * parseInt(limit));
     }
 
-    // console.log(db.query(query, values));
+    console.log(query);
+
     return db.query(query, values);
-}
+};
+
 
 export const GetOneProduct = (id: number) => {
     const query = "SELECT * FROM product WHERE id = $1";

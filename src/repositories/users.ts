@@ -56,7 +56,7 @@ export const updateOneUsers = (body: usersReq, id: number, hashed?: string, imag
     }
 
     if (image) {
-        query += `image = $${values.length + 1} `
+        query += `image = $${values.length + 1}, `
         values.push(image);
     }
 
@@ -86,8 +86,8 @@ export const registerUser = (body: usersReg , hashed: string, image?: string): P
     return db.query(Query, values);
 }
 
-export const loginUser = (email: string): Promise<QueryResult<{id: number, fullname: string; password: string; role: string; uuid: string}>> => {
-    const Query = "select fullname, uuid, id , password, role from users where email = $1";
+export const loginUser = (email: string): Promise<QueryResult<{id: number, fullname: string; password: string; role: string; image: string; uuid: string}>> => {
+    const Query = "select fullname, uuid, id , password, role, image from users where email = $1";
     const values = [email];
     
     return db.query(Query, values);
