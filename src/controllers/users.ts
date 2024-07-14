@@ -11,7 +11,6 @@ import { IUsersRes } from '../models/response';
 export const getUsers = async (req: Request<{},{},{},usersQuery>, res: Response)=>{
     try {
         const { fullname, page , limit, id, uuid } =  req.query;
-        console.log(uuid);
         const result = await getAllUsers( fullname, limit , uuid , (page as string) );
         if(result.rows.length === 0 ) {
             return res.status(404).json({
@@ -58,7 +57,6 @@ export const updateUsers = async(req: Request<{id: number},{},usersReq>, res: Re
         const body = req.body;
         const {password} = req.body
         let hashed;
-        console.log(file?.filename);
 
         if (password) {
             const salt = await bcrypt.genSalt();
@@ -172,7 +170,6 @@ export const login = async (req: Request<{}, {}, usersLogin>, res: Response<{msg
 
         //error handling jika no user
         if(!checkUser.rows.length) throw new Error ('No user has found.');
-        console.log(checkUser.rows[0].role)
 
         //jika ditemukan usernya
         const {password: hashedPwd, fullname , role, uuid, id, image} = checkUser.rows[0];

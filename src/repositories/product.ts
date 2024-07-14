@@ -58,7 +58,6 @@ export const getAllProduct = ({ category, harga_max, harga_min, limit, page, pro
         values.push((parseInt(page) - 1) * parseInt(limit));
     }
 
-    console.log(query);
 
     return db.query(query, values);
 };
