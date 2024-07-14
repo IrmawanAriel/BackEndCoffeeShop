@@ -148,7 +148,7 @@ export const makeProductOrderRelation = (body:ProductOrderRelation )  => {
 }
 
 export const getProductOrderRelation = ( id: number): Promise<QueryResult<ProductOrderRelation[]>> => {
-    const query = 'select order_id, product_id, ice, quantity, size from order_product where order_id = $1 ';
+    const query = 'SELECT op.order_id, op.product_id, op.ice, op.quantity, p.product_name, p.price, p.description , p.image FROM order_product op JOIN product p ON op.product_id = p.id WHERE op.order_id = $1;'
     const values = [id];
     return db.query(query, values);
 }

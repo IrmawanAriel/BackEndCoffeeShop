@@ -13,6 +13,7 @@ export interface pesananModel {
         payment_method: string;
         fullname: string;
         email: string;
+        phone: number;
 }
 
 export interface deletePesanan {

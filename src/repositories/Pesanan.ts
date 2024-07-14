@@ -50,7 +50,8 @@ export const GetPesanan = async (id?: number, page?: number, limit?: number): Pr
       orders.destination, 
       orders.payment_method,  
       orders.orderdate,
-      orders.fullname,  
+      orders.fullname,
+            orders.phone,    
       orders.status,
       SUM(
         CASE 
