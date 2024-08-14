@@ -50,13 +50,21 @@ export const getUsers = async (req: Request<{},{},{},usersQuery>, res: Response)
      }
 }
 
-export const updateUsers = async(req: Request<{id: number},{},usersReq>, res: Response<IUsersRes>) =>{
+export const updateUsers = async(req: Request<{id: number},{},usersReq>, res: Response<IUsersRes>) => {
     try {
-        const { file } = req
+        const { file } = req;
         const id = req.params.id;
         const body = req.body;
-        const {password} = req.body
+        const { password } = req.body;
         let hashed;
+
+        // Check if there is no data input
+        if (Object.keys(body).length === 0 && !file) {
+            return res.status(400).json({
+                msg: 'Tidak ada data yang diinput',
+                data: [],
+            });
+        }
 
         if (password) {
             const salt = await bcrypt.genSalt();
@@ -65,26 +73,41 @@ export const updateUsers = async(req: Request<{id: number},{},usersReq>, res: Re
 
         let result = await updateOneUsers(body, id, hashed, file?.filename);
 
-        if(result.rows.length === 0 ) {
+        if (result.rows.length === 0) {
             return res.status(404).json({
-            msg: 'data tak ditemukan',
-            data: [],
-        })}
+                msg: 'Data tidak ditemukan',
+                data: [],
+            });
+        }
+
         return res.status(200).json({
-            msg: "sucses",
-            data: result.rows
+            msg: "Sukses",
+            data: result.rows,
         });
-    } catch (err: unknown){
-        if (err instanceof Error){
+
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            if (err.message.includes('nilai kunci ganda melanggar batasan unik')) {
+                return res.status(409).json({
+                    msg: "Email sudah terdaftar",
+                    err: "Duplicate email",
+                });
+            }
+            if (err.message.includes('Unexpected end of form')) {
+                return res.status(400).json({
+                    msg: "Terjadi kesalahan pada upload file",
+                    err: "Unexpected end of form",
+                });
+            }
             console.log(err.message);
         }
         return res.status(500).json({
-            msg: "error",
-            err: "internal server error"
-        })
+            msg: "Error",
+            err: "Internal server error",
+        });
     }
-    
 }
+
 
 export const createNewUser = async (req: Request<{},{},usersReq>, res: Response<IUsersRes>) => {
     try{
@@ -101,6 +124,12 @@ export const createNewUser = async (req: Request<{},{},usersReq>, res: Response<
         });
     } catch (err: unknown){
         if (err instanceof Error){
+            if (err.message.includes('nilai kunci ganda melanggar batasan unik')) {
+                return res.status(409).json({
+                    msg: "Email sudah terdaftar",
+                    err: "Duplicate email",
+                });
+            }
             console.log(err.message);
         }
         return res.status(500).json({
@@ -130,38 +159,47 @@ export const deleteOneUser = async (req: Request<{id: number}>, res: Response<IU
     }
 }
 
-export const register = async (req: Request<{},{},usersReg>, res : Response) => {
+export const register = async (req: Request<{},{},usersReg>, res: Response) => {
     const { password } = req.body;
-    const { file } = req
-    try{ 
-        //make hash pass
+    const { file } = req;
+
+    try { 
+        // Hash the password
         const salt = await bcrypt.genSalt();
         const hashed = await bcrypt.hash(password, salt);
 
-        //simpan keadalam db
-        const result = await registerUser(req.body, hashed, file?.filename );
+        // Save to the database
+        const result = await registerUser(req.body, hashed, file?.filename);
 
-        if(result.rowCount !== 1 ) {
+        if (result.rowCount !== 1) {
             return res.status(404).json({
-            msg: 'gagal register, isi data dengan benar',
-            data: [],
-        })}
+                msg: 'Gagal register, isi data dengan benar',
+                data: [],
+            });
+        }
 
         return res.status(200).json({
-            msg: "register sucses",
-            data: result
+            msg: "Register sukses",
+            data: "added " +   result.rowCount + " data",
         });
-        
-    } catch (err: unknown){
-        if (err instanceof Error){
+
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            if (err.message.includes('nilai kunci ganda melanggar batasan unik')) {
+                return res.status(409).json({
+                    msg: "Email sudah terdaftar",
+                    err: "Duplicate email",
+                });
+            }
             console.log(err.message);
         }
         return res.status(500).json({
-            msg: "error",
-            err: `internal  server error`
-        })
+            msg: "Error",
+            err: "Internal server error",
+        });
     }
 }
+
 
 export const login = async (req: Request<{}, {}, usersLogin>, res: Response<{msg: string; id?: number;  image?: string; err?: string; data?: {token: string;} []}>) => {
     try{
