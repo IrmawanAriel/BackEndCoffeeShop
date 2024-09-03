@@ -3,6 +3,7 @@ import { createProduct, getAllProduct, GetOneProduct, UpdateProduct, deleteProdu
 import { productBody, ProductOrderRelation, productQuerry } from '../models/product';
 import { IProductRes } from '../models/response';
 import getLink from '../helpers/getLink';
+import { cloudinaryUploader } from '../helpers/cloudinary';
 
 export const getProduct = async (req: Request<{},{},{},productQuerry>, res: Response<IProductRes>)=>{
     try {
@@ -67,16 +68,21 @@ export const getDetailProduct = async (req: Request<{id: number}> , res: Respons
 
 export const createNewProduct = async (req: Request<{},{}, productBody>, res: Response<IProductRes>) => {
     const { file } = req;
+    const Name_product = req.body.product_name
     if (!file)
         return res.status(400).json({
         msg: "file tidak ada",
         err: "masukan file berjenis JPG dsb",
         });
     try {
-        const result = await createProduct(req.body, file.filename);
+        const { result, error } = await cloudinaryUploader(req, "image", Name_product as string);
+        if (error) throw error;
+        if (!result) throw new Error("Upload gagal");
+        console.log(result.secure_url)
+        const resultDb = await createProduct(req.body, result.secure_url);
         return res.status(201).json({
         msg: "success",
-        data: result.rows,
+        data: resultDb.rows,
         });
     } catch (err: unknown){
         if (err instanceof Error){
@@ -91,18 +97,28 @@ export const createNewProduct = async (req: Request<{},{}, productBody>, res: Re
 };
 
 export const UpdateOneProduct = async (req: Request<{id: number},{}, productBody>, res: Response<IProductRes>) => {
+    const { file } = req;
+    const Name_product = req.body.product_name
+    const id = req.params.id;
+    if (!file)
+        return res.status(400).json({
+        msg: "file tidak ada",
+        err: "masukan file berjenis JPG dsb",
+        });
     try {
-        const { file } = req;
-        const id = req.params.id;
-        const result = await UpdateProduct(id , req.body, file?.filename);
-        if(result.rows.length === 0 ) {
+        const { result, error } = await cloudinaryUploader(req as any, "image", Name_product as string);
+        if (error) throw error;
+        if (!result) throw new Error("Upload gagal");
+        const resultDB = await UpdateProduct(id , req.body, result.secure_url);
+
+        if(resultDB.rows.length === 0 ) {
             return res.status(404).json({
             msg: 'data tak ditemukan',
             data: [],
         })}
         return res.status(200).json({
             msg: 'upadate succed',
-            data: result.rows
+            data: resultDB.rows
         }) 
     } catch (err: unknown){
         if (err instanceof Error){
