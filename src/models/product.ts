@@ -19,8 +19,7 @@ export interface productBody {
     stock: number;
     category: string;
     json: string[];
-    // image?: string
-
+    voucher?: string
 }
 
 export interface ParamsIProduct {

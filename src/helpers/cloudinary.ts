@@ -2,7 +2,6 @@ import { Request } from "express-serve-static-core";
 import { UploadApiOptions, UploadApiResponse } from "cloudinary";
 import DataUriParser from "datauri/parser";
 import path from "path";
-
 import cloudinary from "../configs/cloud";
 
 export const cloudinaryUploader = async (

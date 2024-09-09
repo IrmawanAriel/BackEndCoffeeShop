@@ -64,7 +64,12 @@ export const getAllProduct = ({ category, harga_max, harga_min, limit, page, pro
 
 
 export const GetOneProduct = (id: number) => {
-    const query = "SELECT * FROM product WHERE id = $1";
+    const query = `SELECT product.*, promo.voucher 
+                    FROM product 
+                    LEFT JOIN promo_product ON product.id = promo_product.product_id 
+                    LEFT JOIN promo ON promo.id = promo_product.promo_id 
+                    WHERE product.id = $1`;
+                    
     const values = [id]; 
     return db.query(query, values);
 }

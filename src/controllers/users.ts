@@ -7,6 +7,7 @@ import { payloadInterface } from '../models/payload';
 import { jwtOptions } from '../middlewares/authorization';
 import getLink from '../helpers/getLink';
 import { IUsersRes } from '../models/response';
+import { cloudinaryUploader } from '../helpers/cloudinary';
 
 export const getUsers = async (req: Request<{},{},{},usersQuery>, res: Response)=>{
     try {
@@ -71,9 +72,12 @@ export const updateUsers = async(req: Request<{id: number},{},usersReq>, res: Re
             hashed = await bcrypt.hash(password, salt);
         }
 
-        let result = await updateOneUsers(body, id, hashed, file?.filename);
+        const { result, error } = await cloudinaryUploader(req as any, "image", file?.filename as string);
+        if (error) throw error;
+        if (!result) throw new Error("Upload gagal");
+        let result1 = await updateOneUsers(body, id, hashed, result.secure_url);
 
-        if (result.rows.length === 0) {
+        if (result1.rows.length === 0) {
             return res.status(404).json({
                 msg: 'Data tidak ditemukan',
                 data: [],
@@ -82,7 +86,7 @@ export const updateUsers = async(req: Request<{id: number},{},usersReq>, res: Re
 
         return res.status(200).json({
             msg: "Sukses",
-            data: result.rows,
+            data: result1.rows,
         });
 
     } catch (err: unknown) {
