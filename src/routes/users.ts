@@ -13,7 +13,7 @@ usersRouter.put("/:id", authorization(), singleCloudUploader("image"), updateUse
 
 usersRouter.delete("/:id", authorization(['admin']), deleteOneUser);
 
-usersRouter.post("/register", register);
+usersRouter.post("/register", singleCloudUploader("image"), register);
 
 usersRouter.post("/login", login);
 
