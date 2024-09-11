@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false}));
 
 var corsOptions = {
-    origin: ['*'], //vite 8080
+    origin: ['http://localhost:8080','http://localhost:8084'], //vite 8080
     methods: "PUT" // some legacy browsers (IE11, various SmartTVs) choke on 204
   }
 app.use(cors(corsOptions));

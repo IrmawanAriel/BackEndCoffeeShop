@@ -25,6 +25,12 @@ export const getAllUsers = (fullname?: string, limit?: number | undefined, uuid?
     return db.query(query, values);
 }
 
+export const getUserByIdOnly = (id : string ): Promise<QueryResult<usersGetUuid>> => {
+    let query = "select fullname, email, image , address, phone from users where id =$1  ";
+    const values= [id];
+    return db.query(query, values);
+}
+
 export const updateOneUsers = (body: usersReq, id: number, hashed?: string, image?: string): Promise<QueryResult<usersReq>> => {
     const { fullname, email, address, phone } = body
     let query = "update users set ";

@@ -4,43 +4,58 @@ import { AppParams } from "../models/params";
 import jwt from "jsonwebtoken";
 import { payloadInterface } from "../models/payload";
 
-export const jwtOptions: SignOptions = {
-    expiresIn: "6m", // token akan hangus dalam 5 menit
-    issuer: process.env.JWT_ISSUER,
-  };
 
-export const authorization = (role?: string[]) =>  (req: Request<AppParams> , res: Response<AppParams>, next: NextFunction) => {
-    const bearerToken = req.header("Authorization");
-    // console.log(req.);
-    if(!bearerToken) {
-        return res.status(401).json({
-          msg: "forbien",
-          err: "akses tak diperbolehkan"
+
+export const jwtOptions: SignOptions = {
+  expiresIn: "6m", // token akan hangus dalam 6 menit
+  issuer: process.env.JWT_ISSUER,
+};
+
+export const authorization = (role?: string[]) => (req: Request<{id: number},AppParams>, res: Response<AppParams>, next: NextFunction) => {
+  const bearerToken = req.header("Authorization");
+  const idParam = req.params.id;
+
+  if (!bearerToken) {
+    return res.status(401).json({
+      msg: "forbidden",
+      err: "Akses tidak diperbolehkan",
+    });
+  }
+
+  const token = bearerToken.split(" ")[1];
+
+  // Verifikasi jwt dengan secret key aplikasi
+  jwt.verify(token, <string>process.env.JWT_SECRET, jwtOptions, (err, payload) => {
+    if (err) {
+      return res.status(403).json({
+        msg: err.message,
+        err: err.name,
       });
     }
 
-    const token = bearerToken.split(" ")[1];
+    const tokenDecoded = payload as payloadInterface;
 
-    // verifikasi jwt dengan secret key aplikasi
-    jwt.verify(token, <string>process.env.JWT_SECRET, jwtOptions, (err, payload) => {
-      // kalo tidak valid, ditolak
-      if (err) {
+    // Pengecekan role
+    if (role) {
+      if (!role.includes(tokenDecoded.role)) {
         return res.status(403).json({
-          msg: err.message,
-          err: err.name,
+          msg: "Forbidden",
+          err: "Akses tidak diperbolehkan",
         });
       }
-      // pengecekan role
-      if (role) {
-        if (!role.includes((payload as payloadInterface).role as string)) {
-          return res.status(403).json({
-            msg: "Forbidden",
-            err: "Akses tidak diperbolehkan",
-          });
-        }
+    }
+
+    // Pengecekan id dari token harus sama dengan id yang diminta di params
+    if(role?.includes('user')){
+      if (tokenDecoded.id !== Number(idParam)) {
+        return res.status(403).json({
+          msg: "Forbidden",
+          err: "Tidak memiliki akses untuk akun ini",
+        });
       }
-      // kalo valid, lanjut
-      // req.userPayload = payload;
-      next();
-    });
-  };
+    }
+
+    // Lanjutkan ke middleware berikutnya
+    next();
+  });
+};
